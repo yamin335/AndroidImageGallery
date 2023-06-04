@@ -10,7 +10,9 @@ import mollah.yamin.androidImageGallery.databinding.AlbumGalleryListItemBinding
 import mollah.yamin.androidImageGallery.databinding.ImagePreviewListItemBinding
 import mollah.yamin.androidImageGallery.models.ImageAlbum
 
-class GalleryAlbumAdapter: RecyclerView.Adapter<GalleryAlbumAdapter.ViewHolder>() {
+class GalleryAlbumAdapter constructor(
+    private val callback: (String) -> Unit
+): RecyclerView.Adapter<GalleryAlbumAdapter.ViewHolder>() {
 
     private var dataList: List<ImageAlbum> = ArrayList()
 
@@ -31,6 +33,9 @@ class GalleryAlbumAdapter: RecyclerView.Adapter<GalleryAlbumAdapter.ViewHolder>(
 
             binding.albumName.text = item.albumName
             binding.totalImages.text = item.images.size.toString()
+            binding.root.setOnClickListener {
+                callback(item.albumName)
+            }
         }
     }
 

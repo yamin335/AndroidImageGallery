@@ -10,7 +10,7 @@ import mollah.yamin.androidImageGallery.databinding.ImagePreviewListItemBinding
 
 class ImagePreviewAdapter: RecyclerView.Adapter<ImagePreviewAdapter.ViewHolder>() {
 
-    private var dataList: List<Uri> = ArrayList()
+    private var dataList: List<String> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding: ImagePreviewListItemBinding = ImagePreviewListItemBinding.inflate(LayoutInflater.from(parent.context))
@@ -21,7 +21,9 @@ class ImagePreviewAdapter: RecyclerView.Adapter<ImagePreviewAdapter.ViewHolder>(
         fun bind(position: Int) {
             val item = dataList[position]
             Glide.with(binding.root.context)
-                .load(item)
+                .load(Uri.parse(item))
+                .sizeMultiplier(0.6f)
+                .centerCrop()
                 .into(binding.image)
         }
     }
@@ -35,7 +37,7 @@ class ImagePreviewAdapter: RecyclerView.Adapter<ImagePreviewAdapter.ViewHolder>(
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setData(dataList: List<Uri>) {
+    fun setData(dataList: List<String>) {
         this.dataList = dataList
         notifyDataSetChanged()
     }

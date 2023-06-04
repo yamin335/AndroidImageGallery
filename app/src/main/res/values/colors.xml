@@ -21,7 +21,7 @@
     <color name="colorTextBg">#99000000</color>
     <color name="chip_ripple_color">#99CDDC39</color>
 
-    <color name="colorTest">#CDDC39</color>
+    <color name="chipColor">#CDDC39</color>
     <color name="colorTest1">#D3E864</color>
     <color name="colorTest2">#DBEA74</color>
     <color name="colorTest3">#DDE987</color>

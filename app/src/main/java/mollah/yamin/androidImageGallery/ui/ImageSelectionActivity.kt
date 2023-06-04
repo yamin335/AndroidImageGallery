@@ -1,11 +1,20 @@
 package mollah.yamin.androidImageGallery.ui
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.RelativeLayout
 import androidx.activity.viewModels
+import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.card.MaterialCardView
 import mollah.yamin.androidImageGallery.R
 import mollah.yamin.androidImageGallery.databinding.ImageSelectionActivityBinding
+import mollah.yamin.androidImageGallery.models.SelectedImage
 import mollah.yamin.androidImageGallery.ui.adapters.GalleryAlbumAdapter
 import mollah.yamin.androidImageGallery.ui.adapters.GalleryImageAdapter
 
@@ -19,14 +28,50 @@ class ImageSelectionActivity : AppCompatActivity() {
     private var previewType: String = ALL_IMAGE_PREVIEW
     private lateinit var imageAdapter: GalleryImageAdapter
     private lateinit var albumAdapter: GalleryAlbumAdapter
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<MaterialCardView>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ImageSelectionActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        imageAdapter = GalleryImageAdapter()
-        albumAdapter = GalleryAlbumAdapter()
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheetSelectionCount.container)
+        bottomSheetBehavior.isDraggable = false
+
+        binding.bottomSheetSelectionCount.btnAdd.setOnClickListener {
+            val selectedImages: ArrayList<SelectedImage> = ArrayList()
+            for (value in viewModel.selectedImages.values) {
+                selectedImages.add(value)
+            }
+            selectedImages.sortWith { item1, item2 ->
+                item2.time.compareTo(item1.time)
+            }
+
+            val list: ArrayList<String> = ArrayList()
+            for (item in selectedImages) {
+                list.add(item.image.contentUri.toString())
+            }
+            val nIntent = Intent()
+            nIntent.putStringArrayListExtra("data", list)
+            setResult(Activity.RESULT_OK, nIntent)
+            finish()
+            overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right)
+        }
+
+        viewModel.imageCount.observe(this) {
+            binding.bottomSheetSelectionCount.label.text = "$it Selected"
+            binding.bottomSheetSelectionCount.btnAdd.text = "Add($it)"
+            if (it > 0) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            } else {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
+        }
+
+        imageAdapter = GalleryImageAdapter(viewModel)
+        albumAdapter = GalleryAlbumAdapter {
+            showAlbumImages(it)
+        }
 
         loadImageGallery()
 
@@ -48,7 +93,28 @@ class ImageSelectionActivity : AppCompatActivity() {
             loadImageGallery()
         }
 
+        supportFragmentManager.addOnBackStackChangedListener {
+            val directoryOpen = supportFragmentManager.backStackEntryCount > 0
+            supportActionBar?.let { actionBar ->
+                actionBar.setDisplayHomeAsUpEnabled(directoryOpen)
+                actionBar.setDisplayShowHomeEnabled(directoryOpen)
+            }
+        }
+
         viewModel.loadImages()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        supportFragmentManager.popBackStack()
+        return false
+    }
+
+    private fun showAlbumImages(albumName: String) {
+        supportFragmentManager.commit {
+            val galleryFragment = GalleryFragment.newInstance(albumName)
+            replace(R.id.container, galleryFragment, albumName)
+            addToBackStack(albumName)
+        }
     }
 
     private fun loadImageGallery() {

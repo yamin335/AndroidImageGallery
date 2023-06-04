@@ -6,14 +6,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        tools:context=".ui.GalleryFragment">
+        tools:context=".ui.GalleryFragment"
+        android:background="@color/colorLightGray">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/galleryRecycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingVertical="@dimen/dp_16"
+            android:layout_marginHorizontal="@dimen/dp_8"
+            android:paddingBottom="@dimen/dp_80"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="3"/>
 

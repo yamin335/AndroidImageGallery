@@ -18,12 +18,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mollah.yamin.androidImageGallery.models.ImageAlbum
 import mollah.yamin.androidImageGallery.models.MediaStoreImage
+import mollah.yamin.androidImageGallery.models.SelectedImage
 import mollah.yamin.androidImageGallery.utils.registerObserver
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
 class ImageSelectionViewModel(application: Application): AndroidViewModel(application) {
+    var selectedImages: HashMap<Long, SelectedImage> = HashMap()
+    val imageCount: MutableLiveData<Int> by lazy {
+        MutableLiveData()
+    }
     private val _albumImages: MutableLiveData<List<ImageAlbum>> by lazy {
         MutableLiveData()
     }

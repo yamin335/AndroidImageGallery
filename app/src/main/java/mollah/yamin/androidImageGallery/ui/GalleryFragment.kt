@@ -28,6 +28,7 @@ class GalleryFragment : Fragment() {
 
     // Activity scoped ViewModel
     private val viewModel: ImageSelectionViewModel by activityViewModels()
+    private lateinit var galleryImageAdapter: GalleryImageAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +48,17 @@ class GalleryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        galleryImageAdapter = GalleryImageAdapter(viewModel)
+        binding.galleryRecycler.adapter = galleryImageAdapter
+        viewModel.albumImages.value?.let {
+            for (item in it) {
+                if (item.albumName == albumName) {
+                    galleryImageAdapter.setData(item.images)
+                    break
+                }
+            }
+        }
     }
 
     companion object {
@@ -54,8 +66,7 @@ class GalleryFragment : Fragment() {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @param previewType Parameter 1.
-         * @param albumName Parameter 2.
+         * @param albumName Parameter 1.
          * @return A new instance of fragment GalleryFragment.
          */
 
